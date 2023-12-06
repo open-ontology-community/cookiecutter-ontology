@@ -1,0 +1,9 @@
+{
+  "user_name": "John Doe",
+  "user_github_handle": "@johndoe",
+  "ontology_long": "My new ontology",
+  "ontology_short": "mno",
+  "ontology_iri": "http://example.org/ontologies/mno",
+  "ontology_iri_prefix": "http://example.org/ontologies/mno#",
+  "ontology_iri_prefix": "http://example.org/ontologies/mno#",
+}

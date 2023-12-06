@@ -1,0 +1,15 @@
+@base <{{ cookiecutter.ontology_iri }}> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix dc: <http://purl.org/dc/elements/1.1/> .
+@prefix dct: <http://purl.org/dc/terms/> .
+
+<{{ cookiecutter.ontology_iri }}> rdf:type owl:Ontology ;
+                           owl:versionIRI <{{ cookiecutter.ontology_iri }}/2.0.7> ;
+                           owl:imports <http://www.w3.org/ns/prov-o-inverses-20130430> ;
+                           dct:license <http://creativecommons.org/publicdomain/zero/1.0/>;
+                           dct:title "cookiecutter.ontology_long";
+
+                           owl:imports <http://purl.obolibrary.org/obo/bfo.owl#> ;
+
+                           dc:contributor "(0001) {{ cookiecutter.user_name }} ({{ cookiecutter.user_github_handle }})".
