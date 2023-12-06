@@ -5,7 +5,10 @@ Follow the [installation instructions](https://cookiecutter.readthedocs.io/en/st
 ## Usage
 
 1. Follow cookiecutters [installation instructions](https://cookiecutter.readthedocs.io/en/stable/installation.html) to install the cookiecutter library. You can then run this cookiecutter to build a basic file structure:
-``` cookiecutter https://github.com/open-ontology-community/cookiecutter-ontology.git```
+```
+cookiecutter https://github.com/open-ontology-community/cookiecutter-ontology.git
+```
+
 2. Answer the following questions
 
 ```
@@ -21,4 +24,4 @@ Follow the [installation instructions](https://cookiecutter.readthedocs.io/en/st
 [10/11] ontology_iri_prefix (http://example.org/ontologies/mno#): 
 [11/11] starting_version (0.0.0):
 ```
-
+3. Start your ontology development
