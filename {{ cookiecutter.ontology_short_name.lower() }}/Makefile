@@ -1,5 +1,5 @@
 ONTOLOGY_IRI := {{ cookiecutter.ontology_iri }}
-ONTOLOGY_SHORT := {{ cookiecutter.ontology_short }}
+ONTOLOGY_SHORT := {{ cookiecutter.ontology_short_name }}
 IRI_BASE := {{cookiecutter.ontology_iri_prefix}}
 
 MKDIR_P = mkdir -p

@@ -1,8 +1,13 @@
 {
-  "user_name": "John Doe",
+  "user_family_names": "Doe",
+  "user_given_names": "Jane Mary",
+  "user_name": "{{ cookiecutter.user_given_names }} {{ cookiecutter.user_family_names }}",
   "user_github_handle": "@johndoe",
-  "ontology_long": "My new ontology",
-  "ontology_short": "mno",
-  "ontology_iri": "http://example.org/ontologies/mno",
-  "ontology_iri_prefix": "http://example.org/ontologies/mno#"
+  "user_affiliation": "",
+  "ontology_long_name": "My new ontology",
+  "ontology_short_name": "mno",
+  "ontology_prefix": "{{ cookiecutter.ontology_short_name }}",
+  "ontology_iri": "http://example.org/ontologies/{{ cookiecutter.ontology_short_name }}",
+  "ontology_iri_prefix": "{{ cookiecutter.ontology_iri }}#",
+  "starting_version": "0.0.0"
 }
