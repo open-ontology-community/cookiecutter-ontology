@@ -1,25 +1,25 @@
-ONTOLOGY_IRI := {{ cookiecutter.ontology_iri }}
+ONTOLOGY_IRI := {{ cookiecutter.ontology_iri.replace("/","\/") }}
 ONTOLOGY_SHORT := {{ cookiecutter.ontology_short_name }}
-IRI_BASE := {{cookiecutter.ontology_iri_prefix}}
+IRI_BASE := {{cookiecutter.ontology_iri_prefix.replace("/","\/")}}
 
 MKDIR_P = mkdir -p
 VERSION:= $(shell cat VERSION)
 VERSIONDIR := build/$(ONTOLOGY_SHORT)/$(VERSION)
 ONTOLOGY_SOURCE := src/ontology
 
-subst_paths :=	${subst $(ONTOLOGY_SOURCE),$(VERSIONDIR),${patsubst $(ONTOLOGY_SOURCE)/edits/%,$(ONTOLOGY_SOURCE)/modules/%,$(1)}}
+subst_paths =	${subst $(ONTOLOGY_SOURCE),$(VERSIONDIR),${patsubst $(ONTOLOGY_SOURCE)/edits/%,$(ONTOLOGY_SOURCE)/modules/%,$(1)}}
 
 
 OWL_FILES := $(call subst_paths,$(shell find $(ONTOLOGY_SOURCE)/* -type f -name "*.owl"))
-OMN_FILES := $(call subst_paths,$(shell find $(ONTOLOGY_SOURCE)/* -type f -name "*.omn"))
+TTL_FILES := $(call subst_paths,$(shell find $(ONTOLOGY_SOURCE)/* -type f -name "*.ttl"))
 
 
 
 OWL_COPY := $(OWL_FILES)
 
-OMN_COPY :=	$(OMN_FILES)
+TTL_COPY :=	$(TTL_FILES)
 
-OMN_TRANSLATE := ${patsubst %.omn,%.owl,$(OMN_FILES)}
+TTL_TRANSLATE := ${patsubst %.ttl,%.owl,$(TTL_FILES)}
 
 RM=/bin/rm
 ROBOT_PATH := build/robot.jar
@@ -32,34 +32,34 @@ define replace_devs
 endef
 
 define replace_oms
-	sed -i -E "s/($(IRI_BASE)\/dev\/([a-zA-Z/\-]+)\.)omn/\1owl/m" $1
-	sed -i -E "s/($(IRI_BASE)\/releases\/$(VERSION)\/([a-zA-Z/\-]+)\.)omn/\1owl/m" $1
+	sed -i -E "s/($(IRI_BASE)\/dev\/([a-zA-Z/\-]+)\.)ttl/\1owl/m" $1
+	sed -i -E "s/($(IRI_BASE)\/releases\/$(VERSION)\/([a-zA-Z/\-]+)\.)ttl/\1owl/m" $1
 endef
 
 define replace_owls
-	sed -i -E "s/($(IRI_BASE)\/dev\/([a-zA-Z/\-]+)\.)owl/\1omn/m" $1
-	sed -i -E "s/($(IRI_BASE)\/releases\/$(VERSION)\/([a-zA-Z/\-]+)\.)owl/\1omn/m" $1
+	sed -i -E "s/($(IRI_BASE)\/dev\/([a-zA-Z/\-]+)\.)owl/\1ttl/m" $1
+	sed -i -E "s/($(IRI_BASE)\/releases\/$(VERSION)\/([a-zA-Z/\-]+)\.)owl/\1ttl/m" $1
 endef
 
 define translate_to_owl
 	$(ROBOT) convert --catalog $(VERSIONDIR)/catalog-v001.xml --input $2 --output $1 --format owl
-	$(call replace_omns,$1)
+	$(call replace_ttls,$1)
 	$(call replace_devs,$1)
 endef
 
-define translate_to_omn
-	$(ROBOT) convert --catalog $(VERSIONDIR)/catalog-v001.xml --input $2 --output $1 --format omn
+define translate_to_ttl
+	$(ROBOT) convert --catalog $(VERSIONDIR)/catalog-v001.xml --input $2 --output $1 --format ttl
 	$(call replace_owls,$1)
 	$(call replace_devs,$1)
 endef
 
 .PHONY: all clean base merge directories
 
-all: base merge closure
+all: base merge
 
-base: | directories $(VERSIONDIR)/catalog-v001.xml build/robot.jar $(OWL_COPY) $(OMN_COPY) $(OMN_TRANSLATE)
+base: | directories $(VERSIONDIR)/catalog-v001.xml build/robot.jar $(OWL_COPY) $(TTL_COPY) $(TTL_TRANSLATE)
 
-merge: | $(VERSIONDIR)/$(ONTOLOGY_SHORT)-full.omn
+merge: | $(VERSIONDIR)/$(ONTOLOGY_SHORT)-full.ttl
 
 closure: | $(VERSIONDIR)/$(ONTOLOGY_SHORT)-closure.owl
 
@@ -83,10 +83,10 @@ build/robot.jar: | build
 	curl -L -o $@ https://github.com/ontodev/robot/releases/download/v1.9.2/robot.jar
 
 
-$(VERSIONDIR)/%.owl: $(VERSIONDIR)/%.omn
+$(VERSIONDIR)/%.owl: $(VERSIONDIR)/%.ttl
 	$(call translate_to_owl,$@,$<)
 
-$(VERSIONDIR)/modules/%.owl: $(VERSIONDIR)/edits/%.omn
+$(VERSIONDIR)/modules/%.owl: $(VERSIONDIR)/edits/%.ttl
 	$(call translate_to_owl,$@,$<)
 
 $(VERSIONDIR)/%.owl: $(ONTOLOGY_SOURCE)/%.owl
@@ -97,20 +97,20 @@ $(VERSIONDIR)/modules/%.owl: $(ONTOLOGY_SOURCE)/edits/%.owl
 	cp -a $< $@
 	$(call replace_devs,$@)
 
-$(VERSIONDIR)/modules/%.omn: $(ONTOLOGY_SOURCE)/edits/%.omn
+$(VERSIONDIR)/modules/%.ttl: $(ONTOLOGY_SOURCE)/edits/%.ttl
 	cp -a $< $@
 	$(call replace_devs,$@)
 
-$(VERSIONDIR)/%.omn: $(ONTOLOGY_SOURCE)/%.omn
+$(VERSIONDIR)/%.ttl: $(ONTOLOGY_SOURCE)/%.ttl
 	cp -a $< $@
 	$(call replace_devs,$@)
 
 $(VERSIONDIR)/$(ONTOLOGY_SHORT)-full.owl : | base
-	$(ROBOT) merge --catalog $(VERSIONDIR)/catalog-v001.xml $(foreach f, $(VERSIONDIR)/$(ONTOLOGY_SHORT).owl $(OMN_COPY) $(OWL_COPY), --input $(f)) annotate --ontology-iri $(ONTOLOGY_IRI) --output $@
+	$(ROBOT) merge --catalog $(VERSIONDIR)/catalog-v001.xml $(foreach f, $(VERSIONDIR)/$(ONTOLOGY_SHORT).owl $(TTL_COPY) $(OWL_COPY), --input $(f)) annotate --ontology-iri $(ONTOLOGY_IRI) --output $@
 	$(call replace_oms,$@)
 
-$(VERSIONDIR)/$(ONTOLOGY_SHORT)-full.omn : $(VERSIONDIR)/$(ONTOLOGY_SHORT)-full.owl
-	$(call translate_to_omn,$@,$<)
+$(VERSIONDIR)/$(ONTOLOGY_SHORT)-full.ttl : $(VERSIONDIR)/$(ONTOLOGY_SHORT)-full.owl
+	$(call translate_to_ttl,$@,$<)
 	$(call replace_owls,$@)
 
 $(VERSIONDIR)/$(ONTOLOGY_SHORT)-closure.owl : $(VERSIONDIR)/$(ONTOLOGY_SHORT)-full.owl
