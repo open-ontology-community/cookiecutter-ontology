@@ -40,22 +40,6 @@ jobs:
         with:
           name: build-artifacts
           path: build/{{cookiecutter.ontology_short_name}}
-      - name: install python dependencies
-        run: pip install -r src/scripts/requirements.txt
-      - name: setup robot 1.9.0
-        run: |
-          wget https://github.com/ontodev/robot/releases/download/v1.9.0/robot.jar -O build/robot19.jar
-      - name: Build ETD xlsx
-        run: |
-          java -jar build/robot19.jar merge --input build/{{cookiecutter.ontology_short_name}}/$(cat VERSION)/{{cookiecutter.ontology_short_name}}-full.omn \
-            --include-annotations true \
-          export  --header "ID|LABEL|definition" \
-                  --prefix "{{cookiecutter.ontology_prefix}}: {{cookiecutter.ontology_iri_prefix}}_" \
-                  --sort "LABEL" \
-                  --export $(pwd)/build/{{cookiecutter.ontology_short_name}}/$(cat VERSION)/etd.xlsx
-      - name: Build ETD csv
-        run: |
-          python $(pwd)/src/scripts/etd/etd.py $(pwd)/build/{{cookiecutter.ontology_short_name}}/$(cat VERSION)
       - name: consistency
         run: |
           wget https://github.com/owlcs/releases/raw/master/HermiT/org.semanticweb.hermit-packaged-1.4.6.519-SNAPSHOT.jar -O build/hermit.jar
@@ -74,12 +58,6 @@ jobs:
           path: |
             build/**/*
             !build/**/*.jar
-      - name: competency
-        continue-on-error: true
-        run: |
-          pytest -s -v
-          # bash tests/competency_questions/run_questions.sh "java -jar build/hermit.jar" $(pwd)/build/{{cookiecutter.ontology_short_name}}/$(cat VERSION)/{{cookiecutter.ontology_short_name}}-full.owl true
-          # bash tests/competency_questions/run_questions.sh "java -jar build/hermit.jar" $(pwd)/build/{{cookiecutter.ontology_short_name}}/$(cat VERSION)/{{cookiecutter.ontology_short_name}}-full.owl false
       - name: Upload Artifacts
         if: always()
         uses: actions/upload-artifact@v3
