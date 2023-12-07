@@ -1,6 +1,6 @@
 # A cookiecutter for ontology development
 
-Follow the [installation instructions](https://cookiecutter.readthedocs.io/en/stable/installation.html) to the cookiecutter library.
+This is a [cookiecutter](https://cookiecutter.readthedocs.io/en/stable/README.html) template for collaborative ontology development.
 
 ## Usage
 
